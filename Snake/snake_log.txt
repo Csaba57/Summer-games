@@ -1,0 +1,32 @@
+DAY1:
+    implementing snake, field, apple, node basic structure
+    the field struct's matrix consists of '.' characters and these characters aren't used anywhere except the drawField() function
+
+DAY2:
+    changing the field structure's matrix to be updated when the snake and apple spawns and when the snake moves
+    introducing the syncFieldMatrix() function, it will be used int the init(), moveSnake(), and apple randomizer functions
+    making the drawField() function "stupid" after the matrix upgrade
+    optimizing the randomizeApplePosition() function
+    making expandSnake() function
+    refactored the checkAppleCollision() function
+
+DAY3:
+    when the player wins the whole field is getting filed with the snake's representation charcter
+    changed the input system (instead of 4 variables for the directions I'll be using only one variable)
+    the moveSnake() function no longer calls the syncFieldMatrix function
+
+DAY4:
+    made the basic window and point counter with ncurses (also added a struct to represent the screen)
+    initNcurses() and endNcurses()
+    **FIXED** a bug in the drawField() function (it was drawing an n*n matri all the time)
+
+DAY5:
+    automated the snake movement with wtimeout() and wgetch()
+    adding 'wasd' keys as a new control to movement and removing the previous 'nswe' layout 
+    adding arrow keys to the window with the keypad() function
+    switched char type to int for playerInput()
+    **TODO** fix the game over animation to be better
+    fix the cursor on the small window to show
+    refresh the points when an apple is eaten
+DAY6:
+    FIXED discorvered a floating point error when the player wins the game (the randomizeAppleposition had a zero division if there were no free cells left)
