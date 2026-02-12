@@ -38,6 +38,13 @@ Screen screen;
 Column activeColumns[activeCount];   //the initial value of heads are always a negative number, the initial value of tails are always less than the value of heads
 int takenColumns[activeCount];
 
+/*
+The main loop of the animation.
+Initializes ncurses and stores the width and height of the current window.
+
+param: none
+return: 0 (int)
+*/
 int main() {
 
     initscr();
@@ -46,7 +53,6 @@ int main() {
 
     srand(time(NULL));
     init();
-
 
     while(1) {
 	draw();
@@ -65,7 +71,14 @@ int main() {
     return 0;
 }
 
+/*
+Creates the character table ("screen") and fills it up with random ascii charaters.
+Sets the initial active columns as well as their heads and tails.
+If the terminal is capable of displaying colors, then it sets the terminal colors as well.
 
+param: none
+return: none
+*/
 void init() {
     screen.width = _WIDTH;
     screen.height = _HEIGHT;
@@ -88,8 +101,8 @@ void init() {
     for (int i = 0; i < activeCount; i++) {
 	int colNumber;
 	do {
-	    colNumber = rand() % screen.width;;
-	} while(contains(takenColumns, 5, colNumber));
+	    colNumber = rand() % screen.width;
+	} while(contains(takenColumns, 5, colNumber)); //5 (second param) can be modified to column to activeCount [if there will be a major error now that's thanks for this]
 	takenColumns[i] = colNumber;
 
 	activeColumns[i].colNumber = colNumber;
@@ -109,6 +122,13 @@ void init() {
 
 }
 
+
+/*
+The let go of all used resources.
+
+param: none
+return: none
+*/
 void freeResources() {
     for (int i = 0; i < screen.height; i++)
 	free(screen.field[i]);
@@ -131,6 +151,13 @@ void drawFull() {
     col = 0;
 }
 
+/*
+This function displays the characters of the active columns and also sets the character color.
+Dependig on the head's position it makes the head white or green.
+
+param: none
+return: none
+*/
 void draw() {
     char karakter;
     int color = 0;
@@ -171,6 +198,12 @@ void draw() {
     col = 0;
 }
 
+/*
+Checks if the column with the given column number is an active column.
+
+params: the array of columns (Column[]), the legnth of the column array (int), the column number (int)
+return: 1 (int) if the given number belongs to an active column, 0 (int) otherwise
+*/
 int isActiveCol(Column array[], int arrLength, int column) {
     for (int i = 0; i < arrLength; i++) {
 	if (array[i].colNumber == column) {
@@ -180,6 +213,12 @@ int isActiveCol(Column array[], int arrLength, int column) {
     return 0;
 }
 
+/*
+Checks if the given number is in the given array.
+
+params: the array itself (int[]), the length of the array (int), the number that we are looking for (int)
+return: 1 (int) if the number is found, 0 (int) if it is not found
+*/
 int contains(int array[], int arrLength, int number) {
     for (int i = 0; i < arrLength; i++) {
 	if (array[i] == number) {
@@ -189,6 +228,12 @@ int contains(int array[], int arrLength, int number) {
     return 0;
 }
 
+/*
+Moves the active columns.
+
+param: none
+return: none
+*/
 void updateActiveColumns() {
     //adding +1 to every Column's (element's) head and tail, until they reach the value (HEIGHT-1), if the heads reach this value we only adding +1 to the tails
 	//if the head reaches (HEIGHT-1) we no longer incrementing the head
@@ -215,6 +260,12 @@ void updateActiveColumns() {
     }
 }
 
+/*
+Pick random characters from the screen and changes them.
+
+param: none
+return: none
+*/
 void randomizeScreen(Screen *screen) {
     int x;
     int y;
