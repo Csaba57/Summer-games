@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <ncurses.h>
 
-#define WIDTH 10 //10
-#define HEIGHT 5 //5
-#define POINTS_TO_WIN 5 //3
+#define WIDTH 10
+#define HEIGHT 5
+#define POINTS_TO_WIN 5
 
 typedef struct {
     int width;
@@ -36,7 +36,16 @@ void releaseWindow(WINDOW **window);
 void handleInput(int cursorPosition[]);
 void blink();
 
+/*
+First it initializes the basic window and draws the field.
+Sets the basic cursor positions for both players and enters the main game loop.
+After each turn it checks if the win condition is met.
+If any of the players win or if the game ends in a draw the appropriate text is displayed.
+When the game ends it closes the main window and frees the memory used by the window.
 
+param: none
+return: 0 (int) if the game has ended successfully
+*/
 int main() {
 
     initscr();
@@ -131,7 +140,12 @@ int main() {
     return 0;
 }
 
+/*
+Sets the values of the field properties and initializes the player characters.
 
+param: none
+return: none
+*/
 void init() {
     field.width = WIDTH;
     field.height = HEIGHT;
@@ -145,6 +159,14 @@ void init() {
     player2Char = 'o';
 }
 
+
+/*
+Initializes the bordered game window.
+Places the game text to the correct position.
+
+param: none
+return: none
+*/
 void initWindow() {
     int windowHeight = field.height + 2;
     int windowWidth = field.width + 2;
@@ -161,16 +183,29 @@ void initWindow() {
     resultTextCol = (screenWidth / 2) - (windowWidth / 2) - 4;
 }
 
+
+/*
+Clears and deletes the given window. Frees up the memory afterwards.
+
+param: pointer to window pointer (WINDOW**)
+return: none
+*/
 void releaseWindow(WINDOW **window) {
     wclear(*window);
     wrefresh(*window);
     delwin(*window);
-    window = NULL;
+    *window = NULL;
 
     clear();
     refresh();
 }
 
+/*
+Checks if there is no empty space on the field.
+
+param: none
+return: 1 (int) if the field has no mor empty space, 0 (int) otherwise
+*/
 int fieldIsFull() {
     for (int i = 0; i < field.height; i++) {
 	for (int j = 0; j < field.width; j++) {
@@ -182,6 +217,12 @@ int fieldIsFull() {
     return 1;
 }
 
+/*
+Prints the current state of the field to the screen.
+
+param: none
+return: none
+*/
 void drawField() {
     for (int i = 0; i < field.height; i++) {
 	for (int j = 0; j < field.width; j++) {
@@ -191,6 +232,12 @@ void drawField() {
     wrefresh(window);
 }
 
+/*
+Checks for identical characters horizontally, vertically, and diagonally.
+
+param: a character that represents a player (char)
+return 1 (int) if there are enough characters (POINTS_TO_WIN) near each other, 0 (int) otherwise
+*/
 int checkWinCondition(char playerChar) {
     int points = 0;
     //horizontal check
@@ -319,6 +366,13 @@ int checkWinCondition(char playerChar) {
     return 0;
 }
 
+/*
+Gets the palyer input and moves the cursor accordingly.
+If the input is the enter or space key and the chosen position is empty the function terminates.
+
+param: an array, which cotains the row and column of the cursor's position (int[])
+return: none
+*/
 void handleInput(int cursorPosition[]) {
     wmove(window, cursorPosition[0], cursorPosition[1]);
     wrefresh(window);
@@ -356,6 +410,13 @@ void handleInput(int cursorPosition[]) {
     } while(input != '\n' && input != ' ');
 }
 
+/*
+If there are '#' charcaters on the field this function blinks them a given amount of times (blinkCnt)
+blink: switching between '#' and '$' characters
+
+param: none
+retrun: none
+*/
 void blink() {
     int blinkCnt = 30;
 
