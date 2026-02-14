@@ -217,7 +217,7 @@ int contains(char* word, char letter) {
 /*
 Changes the characters of the representation according to the given word and the given character.
 
-params: the word to be guessed(char*), the letter to look for (char), the visual representation of the word
+params: the word to be guessed(char*), the letter to look for (char), the visual representation of the word (char*)
 return: none
 */
 void revealLetters(char* word, char letter, char* representation) {

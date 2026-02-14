@@ -411,7 +411,7 @@ void handleInput(int cursorPosition[]) {
 }
 
 /*
-If there are '#' charcaters on the field this function blinks them a given amount of times (blinkCnt)
+If there are '#' characaters on the field this function blinks them a given amount of times (blinkCnt)
 blink: switching between '#' and '$' characters
 
 param: none

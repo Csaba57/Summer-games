@@ -27,7 +27,6 @@ typedef struct {
 void init();
 void freeResources();
 void draw();
-void drawFull();   //[debug] function
 int isActiveCol(Column array[], int arrLength, int colNum);
 int contains(int array[], int arrLength, int number);
 void updateActiveColumns();
@@ -102,14 +101,12 @@ void init() {
 	int colNumber;
 	do {
 	    colNumber = rand() % screen.width;
-	} while(contains(takenColumns, 5, colNumber)); //5 (second param) can be modified to column to activeCount [if there will be a major error now that's thanks for this]
+	} while(contains(takenColumns, 5, colNumber));
 	takenColumns[i] = colNumber;
 
 	activeColumns[i].colNumber = colNumber;
-	activeColumns[i].head = (rand() % 39 + 1) * -1; //rand() % 6 + 1) * -1
+	activeColumns[i].head = (rand() % 39 + 1) * -1;
 	activeColumns[i].tail = activeColumns[i].head - _LENGTH;
-	//[debug]
-	//printf("tail: %d, head: %d\n", activeColumns[i].tail, activeColumns[i].head);
     }
 
     //defining colors
@@ -135,20 +132,6 @@ void freeResources() {
     free(screen.field);
     screen.field = NULL;
 
-}
-
-//[debug]
-void drawFull() {
-    for (int i = 0; i < screen.height; i++) {
-	for (int j = 0; j < screen.width; j++) {
-	    printw("%c", screen.field[i][j]);
-	}
-	row++;
-	move(row, col);
-	refresh();
-    }
-    row = 0;
-    col = 0;
 }
 
 /*
@@ -235,9 +218,9 @@ param: none
 return: none
 */
 void updateActiveColumns() {
-    //adding +1 to every Column's (element's) head and tail, until they reach the value (HEIGHT-1), if the heads reach this value we only adding +1 to the tails
+    //adding +1 to every Column's (element's) head and tail, until they reach the value (HEIGHT-1), if a head reaches this value we only adding +1 to the tail
 	//if the head reaches (HEIGHT-1) we no longer incrementing the head
-	//if the tail also reaches (HEIGHT-1) we set the initial value to head and tail and we choose a different column (randomly)
+	//if the tail also reaches (HEIGHT-1) we set the initial values to the head and the tail and we choose a different column (randomly)
 
     for (int i = 0; i < activeCount; i++) {
 	if (activeColumns[i].head < _HEIGHT - 1) {
@@ -261,7 +244,7 @@ void updateActiveColumns() {
 }
 
 /*
-Pick random characters from the screen and changes them.
+Picks random characters from the screen and changes them.
 
 param: none
 return: none
