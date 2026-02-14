@@ -84,7 +84,17 @@ WINDOW *window;
 int pointsPosX;
 int pointsPosY;
 
+/*
+Perform the initialization steps for ncurses and for all the game sprites.
+Enables keypad control.
+Contains the main loop of the game.
+  Gets player input and handles it.
+  Manages all the other functions in the correct order.
+After the main loop is ended it frees resources.
 
+param: none
+return: 0 (int)
+*/
 int main() {
 
     initNcurses();
@@ -136,7 +146,14 @@ int main() {
 }
 
 
+/*
+Sets the initial values of the field.
+Sets the initial position and character of the apple.
+Sets the initial position and length of the snake, also sets the default movement direction.
 
+param: none
+return: none
+*/
 void init() {
     field.width = FIELD_WIDTH;
     field.height = FIELD_HEIGHT;
@@ -170,6 +187,13 @@ void init() {
     direction = 2;
 }
 
+/*
+Releases the memory used by the snake and the field.
+Sets the field and snake pointer properties to NULL to avoid dangling pointer problem.
+
+param: none
+return: none
+*/
 void freeResources() {
     for (int i = 0; i < field.height; i++)
 	free(*(field.matrix + i));
@@ -179,6 +203,12 @@ void freeResources() {
     snake.body = NULL;
 }
 
+/*
+Synchronizes the apple's and the snake's positions on the field.
+
+param: none
+return: none
+*/
 void syncFieldMatrix() {
     char karakter;
     for (int i = 0; i < field.height; i++) {
@@ -200,6 +230,12 @@ void syncFieldMatrix() {
     }
 }
 
+/*
+Displays the whole field with the snake and the apple using the right colors.
+
+param: none
+return: none
+*/
 void drawField() {
     for (int i = 0; i < field.height; i++) {
 	for (int j = 0; j < field.width; j++) {
@@ -218,10 +254,24 @@ void drawField() {
     wrefresh(window);
 }
 
+/*
+Check's if the snake is big enough to fill the field.
+
+param: none
+return: 1 (int) if the snake is big enough, 0 (int) otherwise
+*/
 int checkWinCondition() {
     return snake.bodyLength == field.width * field.height;
 }
 
+/*
+Moves all the nodes of the snake by 1 unit towards the active direction.
+First it moves the snake's body, then the head.
+(This logic also handles when a new node is being added to the snake.)
+
+param: none
+return: none
+*/
 void moveSnake() {
     for (int i = snake.bodyLength - 1; i > 0; i--) {
 	snake.body[i].x = snake.body[i - 1].x;
@@ -239,6 +289,12 @@ void moveSnake() {
     }
 }
 
+/*
+Changes the movement direction based on the player's input.
+
+param: none
+retrun: none
+*/
 void handleInput() {
     switch (playerInput) {
 	case KEY_UP:
@@ -267,10 +323,22 @@ void handleInput() {
     }
 }
 
+/*
+Checks if the snake touches the apple.
+
+param: none
+return: 1 (int) if the snake collides with the apple, 0 (int) otherwise
+*/
 int checkAppleCollision() {
     return snake.body[0].x == apple.x && snake.body[0].y == apple.y;
 }
 
+/*
+Places the apple at a random position on the field, which is not taken by the snake.
+
+param: Pointer to the apple (Apple*)
+return: none
+*/
 void randomizeApplePosition(Apple *fruit) {
     //Not using the Node struct's repChar property here
     int freeCellNumber = 0;
@@ -303,6 +371,13 @@ void randomizeApplePosition(Apple *fruit) {
     }
 }
 
+/*
+Makes the snake 1 character longer.
+Adds a node to the end of the snake with the same position as the prevoius node.
+
+param: none
+return: none
+*/
 void expandSnake() {
     snake.body = (Node*)realloc(snake.body, (snake.bodyLength + 1) * sizeof(Node));
     snake.bodyLength++;
@@ -311,6 +386,12 @@ void expandSnake() {
     snake.body[snake.bodyLength - 1].repChar = snake.body[snake.bodyLength - 2].repChar;
 }
 
+/*
+Replaces every character of the field with the snake's representation character.
+
+param: none
+return: none
+*/
 void fillField() {
     for (int i = 0; i < field.height; i++) {
 	for (int j = 0; j < field.width; j++) {
@@ -319,7 +400,14 @@ void fillField() {
     }
 }
 
+/*
+Checks wether the snake collides with the bounds of the field or itself.
 
+param: none
+return:
+    1 (int) if the snake collides with itself or with the boundaries of the field
+    0 (int) if the snake does not collide with itself or the boundaries of the field
+*/
 int checkGameOver() {
     if (snake.body[0].x < 0 || snake.body[0].x > field.height - 1)
 	return 1;
@@ -336,7 +424,13 @@ int checkGameOver() {
     return 0;
 }
 
+/*
+Creates the screen for ncurses.
+Creates color pairs, if the system is capable of displaying colors.
 
+param: none
+return: none
+*/
 void initNcurses() {
     initscr();
 
@@ -351,10 +445,23 @@ void initNcurses() {
     }
 }
 
+/*
+Releases all the resources used by ncurses.
+
+param: none
+return: none
+*/
 void endNcurses() {
     endwin();
 }
 
+/*
+Creates the default window of the game with the border and the text.
+Sets the movement speed (window timeout).
+
+param: none
+return: none
+*/
 void initWindow() {
     int windowHeight = field.height + 2;
     int windowWidth = field.width + 2;
@@ -374,16 +481,29 @@ void initWindow() {
     wtimeout(window, 250);
 }
 
+/*
+Clears the given ncurses window, then destroys it and frees the memory used by the window.
+
+param: Pointer to the window pointer (WINDOW**)
+return: none
+*/
 void releaseWindow(WINDOW **window) {
     wclear(*window);
     wrefresh(*window);
     delwin(*window);
-    window = NULL;
+    *window = NULL;
 
     clear();
     refresh();
 }
 
+/*
+Refreshes the text which indicates the number of points.
+It also adjusts the horizontal position of the text based on the number of digits of the player points.
+
+param: none
+return: none
+*/
 void redrawPoints() {
     if (points < 10) {
 	move(pointsPosX, pointsPosY + 2);
@@ -396,18 +516,25 @@ void redrawPoints() {
     refresh();
 }
 
+/*
+Displays the given text on a separate window.
+Closes the window afterwards.
+
+param: The text to be displayed. (char*)
+return: none
+*/
 void displayResult(char *text) {
     int height = 3;
     int width = strlen(text) + 10;
     int row = (screen.height / 2) - (height / 2);
     int column = (screen.width / 2) - (width / 2);
 
-    WINDOW *defeatWindow = newwin(height, width, row, column);
-    box(defeatWindow, '*', '=');
+    WINDOW *resultWindow = newwin(height, width, row, column);
+    box(resultWindow, '*', '=');
     refresh();
-    mvwprintw(defeatWindow, height / 2, (width / 2) - (strlen(text) / 2), "%s", text);
-    wrefresh(defeatWindow);
+    mvwprintw(resultWindow, height / 2, (width / 2) - (strlen(text) / 2), "%s", text);
+    wrefresh(resultWindow);
 
     napms(2000);
-    releaseWindow(&defeatWindow);
+    releaseWindow(&resultWindow);
 }
